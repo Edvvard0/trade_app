@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Профиль - TradeShop{% endblock %}
+
+{% block content %}
+<style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        display: flex;
+        gap: 2rem;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .profile-info {
+        flex: 1;
+        padding: 1.5rem;
+    }
+    .profile-info h1 {
+        font-size: 1.75rem;
+        color: #2563eb;
+        margin-bottom: 1.5rem;
+    }
+    .profile-info p {
+        font-size: 1rem;
+        color: #1e3a8a;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    .profile-info p span {
+        font-weight: bold;
+        color: #4b5563;
+    }
+    .profile-actions {
+        flex: 0 0 300px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .action-button {
+        display: block;
+        padding: 0.75rem;
+        background-color: #2563eb;
+        color: #ffffff;
+        text-decoration: none;
+        text-align: center;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .action-button:hover {
+        background-color: #1e3a8a;
+    }
+    @media (max-width: 768px) {
+        .profile-container {
+            flex-direction: column;
+        }
+        .profile-actions {
+            flex: none;
+            align-items: center;
+        }
+        .action-button {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-info">
+        <h1>Профиль пользователя</h1>
+        <p><span>Имя пользователя:</span> {{ user.username }}</p>
+        <p><span>Имя:</span> {{ user.first_name|default:"Не указано" }}</p>
+        <p><span>Фамилия:</span> {{ user.last_name|default:"Не указано" }}</p>
+        <p><span>Email:</span> {{ user.email|default:"Не указано" }}</p>
+    </div>
+    <div class="profile-actions">
+        <a href="{% url 'my_ads' %}" class="action-button">Мои объявления</a>
+        <a href="{% url 'my_proposals' %}" class="action-button">Мои предложения на обмен</a>
+        <a href="{% url 'create_ad' %}" class="action-button">Создать объявление</a>
+    </div>
+</div>
+{% endblock %}

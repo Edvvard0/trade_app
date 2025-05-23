@@ -1,0 +1,180 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ proposal.ad_sender.title }} ↔ {{ proposal.ad_receiver.title }} - TradeShop{% endblock %}
+
+{% block content %}
+<style>
+    .proposal-detail-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    .proposal-detail-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .proposal-detail-images {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .proposal-detail-image {
+        width: 50%;
+        max-height: 400px;
+        object-fit: cover;
+    }
+    .proposal-detail-image-placeholder {
+        width: 50%;
+        height: 400px;
+        background-color: #d1d5db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4b5563;
+        font-size: 1rem;
+    }
+    .proposal-detail-content {
+        padding: 1.5rem;
+    }
+    .proposal-detail-title {
+        font-size: 1.75rem;
+        font-weight: bold;
+        color: #2563eb;
+        margin-bottom: 1rem;
+    }
+    .proposal-detail-title a {
+        color: #2563eb;
+        text-decoration: none;
+    }
+    .proposal-detail-title a:hover {
+        text-decoration: underline;
+    }
+    .proposal-detail-comment {
+        font-size: 1rem;
+        color: #1e3a8a;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    .proposal-detail-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #4b5563;
+        margin-bottom: 1.5rem;
+    }
+    .proposal-detail-meta span {
+        background-color: #eff6ff;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+    }
+    .status-pending {
+        background-color: #fefcbf;
+        color: #b45309;
+    }
+    .status-accepted {
+        background-color: #bbf7d0;
+        color: #15803d;
+    }
+    .status-rejected {
+        background-color: #fecaca;
+        color: #b91c1c;
+    }
+    .proposal-detail-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .action-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .action-button.accept {
+        background-color: #2563eb;
+        color: #ffffff;
+    }
+    .action-button.accept:hover {
+        background-color: #1e3a8a;
+    }
+    .action-button.reject {
+        background-color: #b91c1c;
+        color: #ffffff;
+    }
+    .action-button.reject:hover {
+        background-color: #991b1b;
+    }
+    .action-button.secondary {
+        background-color: #eff6ff;
+        color: #2563eb;
+    }
+    .action-button.secondary:hover {
+        background-color: #93c5fd;
+    }
+    @media (max-width: 768px) {
+        .proposal-detail-images {
+            flex-direction: column;
+        }
+        .proposal-detail-image, .proposal-detail-image-placeholder {
+            width: 100%;
+            max-height: 300px;
+        }
+        .proposal-detail-title {
+            font-size: 1.5rem;
+        }
+        .proposal-detail-actions {
+            flex-direction: column;
+        }
+        .action-button {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="proposal-detail-container">
+    <div class="proposal-detail-card">
+        <div class="proposal-detail-images">
+            {% if proposal.ad_sender.image_url %}
+                <img src="{{ proposal.ad_sender.image_url }}" alt="{{ proposal.ad_sender.title }}" class="proposal-detail-image">
+            {% else %}
+                <div class="proposal-detail-image-placeholder">Изображение отправителя отсутствует</div>
+            {% endif %}
+            {% if proposal.ad_receiver.image_url %}
+                <img src="{{ proposal.ad_receiver.image_url }}" alt="{{ proposal.ad_receiver.title }}" class="proposal-detail-image">
+            {% else %}
+                <div class="proposal-detail-image-placeholder">Изображение получателя отсутствует</div>
+            {% endif %}
+        </div>
+        <div class="proposal-detail-content">
+            <h1 class="proposal-detail-title">
+                Обмен: <a href="{% url 'current_ad' proposal.ad_sender.id %}">{{ proposal.ad_sender.title }}</a> на
+                <a href="{% url 'current_ad' proposal.ad_receiver.id %}">{{ proposal.ad_receiver.title }}</a>
+            </h1>
+            <div class="proposal-detail-meta">
+                <span class="status-{{ proposal.status }}">Статус: {{ proposal.get_status_display }}</span>
+                <span>Создано: {{ proposal.created_at|date:"d.m.Y" }}</span>
+                <span>Отправитель: {{ proposal.ad_sender.user.username }}</span>
+                <span>Получатель: {{ proposal.ad_receiver.user.username }}</span>
+            </div>
+            <div class="proposal-detail-comment">
+                {{ proposal.comment|linebreaks }}
+            </div>
+            <div class="proposal-detail-actions">
+                <button class="action-button secondary" onclick="history.back()">Вернуться к списку</button>
+                {% if user == proposal.ad_receiver.user and proposal.status == 'ожидает' %}
+                    <button class="action-button accept" onclick="location.href='{% url 'accept_proposal' proposal.id %}'">Принять</button>
+                    <button class="action-button reject" onclick="location.href='{% url 'reject_proposal' proposal.id %}'">Отклонить</button>
+                {% endif %}
+                {% if user == proposal.ad_sender.user and proposal.status == 'ожидает' %}
+                    <button class="action-button reject" onclick="location.href='{% url 'delete_proposal' proposal.id %}'">Удалить</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

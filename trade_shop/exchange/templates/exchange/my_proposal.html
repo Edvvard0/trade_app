@@ -1,0 +1,181 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Предложения обмена - TradeShop{% endblock %}
+
+{% block header %}
+    <form method="get" action="{% url 'search' %}" class="search-form">
+        <input type="text" name="q" placeholder="Поиск объявлений..." class="search-bar" value="{{ request.GET.q|default:'' }}">
+        <button type="submit" class="search-button">Найти</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+<style>
+    .search-form {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .search-bar {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #93c5fd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        color: #1e3a8a;
+        background-color: #eff6ff;
+        width: 200px;
+    }
+    .search-bar:focus {
+        outline: none;
+        border-color: #2563eb;
+        background-color: #ffffff;
+        box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+    }
+    .search-bar::placeholder {
+        color: #93c5fd;
+    }
+    .search-button {
+        padding: 0.5rem 1rem;
+        background-color: #2563eb;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .search-button:hover {
+        background-color: #1e3a8a;
+    }
+
+    .proposals-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    .proposal-card {
+        display: flex;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        text-decoration: none;
+        color: #1e3a8a;
+        transition: transform 0.2s;
+    }
+    .proposal-card-click {
+        display: flex;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        text-decoration: none;
+        color: #1e3a8a;
+        transition: transform 0.2s;
+    }
+    .proposal-card:hover {
+        transform: translateY(-4px);
+    }
+    .proposal-images {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+    .proposal-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+    .proposal-image-placeholder {
+        width: 150px;
+        height: 150px;
+        background-color: #d1d5db;
+    }
+    .proposal-content {
+        padding: 1rem;
+        flex-grow: 1;
+    }
+    .proposal-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #2563eb;
+    }
+    .proposal-comment {
+        font-size: 0.9rem;
+        color: #1e3a8a;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+    .proposal-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #4b5563;
+    }
+    .proposal-meta span {
+        background-color: #eff6ff;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+    .status-pending {
+        background-color: #fefcbf;
+        color: #b45309;
+    }
+    .status-accepted {
+        background-color: #bbf7d0;
+        color: #15803d;
+    }
+    .status-rejected {
+        background-color: #fecaca;
+        color: #b91c1c;
+    }
+    @media (max-width: 768px) {
+        .proposal-card {
+            flex-direction: column;
+        }
+        .proposal-images {
+            flex-direction: row;
+            width: 100%;
+        }
+        .proposal-image, .proposal-image-placeholder {
+            width: 50%;
+            height: 200px;
+        }
+    }
+</style>
+
+<div class="proposals-container">
+    {% for proposal in proposals %}
+    <div class="proposal-card">
+        <a href="{% url 'current_proposal' proposal.id %}" class="proposal-card-click">
+            <div class="proposal-images">
+                {% if proposal.ad_sender.image_url %}
+                    <img src="{{ proposal.ad_sender.image_url }}" alt="{{ proposal.ad_sender.title }}" class="proposal-image">
+                {% else %}
+                    <div class="proposal-image-placeholder"></div>
+                {% endif %}
+
+            </div>
+            <div class="proposal-content">
+                <h2 class="proposal-title">
+                    Обмен: <a href="{% url 'current_ad' proposal.ad_sender.id %}">{{ proposal.ad_sender.title }}</a> на
+                    <a href="{% url 'current_ad' proposal.ad_receiver.id %}">{{ proposal.ad_receiver.title }}</a>
+                </h2>
+                <p class="proposal-comment">{{ proposal.comment }}</p>
+                <div class="proposal-meta">
+                    <span class="status-{{ proposal.status }}">Статус: {{ proposal.status }}</span>
+                    <span>Создано: {{ proposal.created_at|date:"d.m.Y" }}</span>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% empty %}
+        <p style="text-align: center; color: #1e3a8a;">Нет предложений обмена для отображения.</p>
+
+    {% endfor %}
+</div>
+{% endblock %}

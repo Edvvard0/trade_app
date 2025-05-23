@@ -1,0 +1,162 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Редактировать объявление - TradeShop{% endblock %}
+
+{% block content %}
+<style>
+    .update-ad-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .update-ad-container h1 {
+        font-size: 1.75rem;
+        color: #2563eb;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        font-size: 1rem;
+        color: #1e3a8a;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #93c5fd;
+        border-radius: 4px;
+        font-size: 1rem;
+        color: #1e3a8a;
+        background-color: #eff6ff;
+        box-sizing: border-box;
+    }
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    .form-group select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='%231e3a8a' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+        padding-right: 2rem;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #2563eb;
+        background-color: #ffffff;
+        box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #93c5fd;
+    }
+    .update-button {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #2563eb;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .update-button:hover {
+        background-color: #1e3a8a;
+    }
+    .errorlist {
+        color: #dc2626;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        list-style: none;
+        padding: 0;
+    }
+    @media (max-width: 768px) {
+        .update-ad-container {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="update-ad-container">
+    <h1>Редактировать объявление</h1>
+    {% if form.errors %}
+        <p style="color: #dc2626; text-align: center;">Пожалуйста, исправьте ошибки в форме.</p>
+    {% endif %}
+    <form method="post" action="{% url 'update_ad' ad.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <ul class="errorlist">
+                    {% for error in form.title.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <ul class="errorlist">
+                    {% for error in form.description.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.image_url.id_for_label }}">{{ form.image_url.label }} (опционально)</label>
+            {{ form.image_url }}
+            {% if form.image_url.errors %}
+                <ul class="errorlist">
+                    {% for error in form.image_url.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+            {{ form.category }}
+            {% if form.category.errors %}
+                <ul class="errorlist">
+                    {% for error in form.category.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.condition.id_for_label }}">{{ form.condition.label }}</label>
+            {{ form.condition }}
+            {% if form.condition.errors %}
+                <ul class="errorlist">
+                    {% for error in form.condition.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <button type="submit" class="update-button">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}
