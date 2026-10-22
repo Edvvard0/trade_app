@@ -1,158 +1,119 @@
-# TradeShop
+<div align="center">
 
-TradeShop — это веб-приложение на базе Django для размещения и обмена
-товарами. Пользователи могут создавать объявления, просматривать чужие объявления,
-выполнять поиск, фильтровать по категориям и состоянию,
-а также отправлять предложения обмена.
-Приложение включает авторизацию, пагинацию и тестирование.
+# 🔄 TradeShop
 
----
+**Веб-приложение на Django для размещения объявлений и обмена вещами между пользователями**
 
-## Основные возможности
+![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-5.2-092E20?style=for-the-badge&logo=django&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 
-### Объявления:
-- Создание, редактирование, удаление объявлений (только для владельцев).
-- Просмотр всех объявлений или только своих.
-- Фильтрация по категориям (машины, дома, хобби, другое) и состоянию (новый, б/у).
-- Поиск по заголовку и описанию.
-
-### Предложения обмена:
-- Отправка предложений обмена между объявлениями.
-- Просмотр списка предложений с фильтрацией по статусу (ожидает, принята, отклонена).
-
-
-### Безопасность:
-- Аутентификация через Django для создания, редактирования и удаления.
-- Проверка прав доступа (только владелец может редактировать/удалять).
+</div>
 
 ---
 
-## Технологии
+## 📖 О проекте
 
-- Backend: Django 4.x  
-- Frontend: HTML, CSS, Django templates  
-- База данных:  PostgreSQL
-- Тестирование: Django TestCase  
-- Python: 3.8+
+TradeShop — доска объявлений с обменом: пользователь публикует объявление о вещи, находит чужие объявления через фильтры и полнотекстовый поиск и отправляет владельцу предложение обмена своей вещи на его. Получатель может принять или отклонить предложение.
 
----
+<!-- TODO: скриншот -->
 
-## Установка
+## ✨ Возможности
 
+**Объявления**
+- Создание, редактирование и удаление (только для авторизованных; правка и удаление — владельцем)
+- Общий список с пагинацией и страница «Мои объявления»
+- Фильтры по категории (машины, дома, хобби, другое) и состоянию (новый, б/у)
+- Полнотекстовый поиск по заголовку и описанию (PostgreSQL `SearchVector` / `SearchRank`)
 
-### Шаги
+**Предложения обмена**
+- Создание предложения: объявление-отправитель ↔ объявление-получатель + комментарий
+- Списки «мои предложения» и «предложения, отправленные мне»
+- Принять, отклонить, изменить и удалить предложение
 
-1. Клонируйте репозиторий:  
-   ```bash
-   git clone https://github.com/Edvvard0/trade_app.git
-   cd TradeShop
-Создайте и активируйте виртуальное окружение:
+**Аккаунты**
+- Вход / выход и страница профиля на встроенной авторизации Django (страницы регистрации нет — пользователей создаёт админ через Django Admin)
+
+## 🧱 Стек
+
+| Технология | Роль |
+|---|---|
+| Python 3.12+ | Язык |
+| Django 5.2 | Бэкенд, ORM, шаблоны, админка |
+| Django Templates (HTML) | Фронтенд |
+| PostgreSQL (`psycopg`) | БД и полнотекстовый поиск |
+| Django `TestCase` | Тесты views |
+
+## 🗂 Структура проекта
+
+```text
+trade_shop/
+├── manage.py
+├── trade_shop/     # settings, корневые urls, wsgi/asgi
+├── ads/            # объявления: модели, формы, views, шаблоны, поиск (utils.py), тесты
+├── exchange/       # предложения обмена: модели, формы, views, шаблоны, тесты
+├── users/          # логин, логаут, профиль
+└── core/           # базовый шаблон base.html
+```
+
+## 🚀 Быстрый старт
+
+Нужны Python 3.12+ и запущенный PostgreSQL.
 
 ```bash
-Копировать
-Редактировать
+git clone https://github.com/Edvvard0/trade_app.git
+cd trade_app
+
 python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-.venv\Scripts\activate     # Windows
-
-```
-```commandline
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-```commandline
-python manage.py makemigrations
+# создайте БД trade_shop в PostgreSQL (параметры подключения — в settings.py)
+cd trade_shop
 python manage.py migrate
-```
-
-
-```commandline
+python manage.py createsuperuser # чтобы войти в приложение
 python manage.py runserver
 ```
 
-Приложение будет доступно по адресу: http://127.0.0.1:8000
+Приложение: http://127.0.0.1:8000
 
-Структура проекта
+Тесты:
+
 ```bash
-Копировать
-Редактировать
-TradeShop/
-├── ads/
-│   ├── migrations/
-│   ├── templates/ads/
-│   │   ├── all_ads.html            # Список объявлений
-│   │   ├── current_ad.html         # Страница конкретного объявления
-│   │   ├── create_ads.html         # Форма создания объявления
-│   │   ├── update_ad.html          # Форма редактирования объявления
-│   │   ├── exchange_proposals.html# Список предложений обмена
-│   ├── templatetags/
-│   │   ├── ad_filters.py           # Кастомные фильтры Django
-│   ├── __init__.py
-│   ├── admin.py                    # Настройки админ-панели
-│   ├── apps.py
-│   ├── forms.py                    # Формы для создания/редактирования объявлений
-│   ├── models.py                   # Модели (Ad, ExchangeProposal)
-│   ├── tests.py                    # Тесты для views
-│   ├── urls.py                     # Маршруты приложения
-│   ├── utils.py                    # Утилиты (q_search)
-│   ├── views.py                    # Представления
-├── core/
-│   ├── templates/core/
-│   │   ├── base.html               # Базовый шаблон
-├── trade_shop/
-│   ├── __init__.py
-│   ├── asgi.py
-│   ├── settings.py                 # Настройки проекта
-│   ├── urls.py                     # Главные маршруты
-│   ├── wsgi.py
-├── manage.py
-├── requirements.txt
-├── README.md
-
+python manage.py test
 ```
 
-Основные маршруты
-/ — Список всех объявлений (all_ads)
+## ⚙️ Конфигурация
 
-/current_ad/<id>/ — Просмотр конкретного объявления
+Переменных окружения нет: параметры подключения к PostgreSQL заданы прямо в `trade_shop/trade_shop/settings.py` (секция `DATABASES`: БД `trade_shop`, `localhost:5432`). Перед деплоем вынесите в окружение `SECRET_KEY`, учётные данные БД и `DEBUG`.
 
-/my_ads/ — Список объявлений текущего пользователя
+## 🔌 Маршруты
 
-/create/ — Создание нового объявления (требуется авторизация)
+| URL | Описание |
+|---|---|
+| `/` | Профиль (нужен вход) |
+| `/login/`, `/logout/` | Вход и выход |
+| `/ads/` | Список объявлений (`?category=`, `?condition=`, `?page=`) |
+| `/ads/<id>/` | Страница объявления |
+| `/ads/my_ads/` | Мои объявления |
+| `/ads/create/`, `/ads/update/<id>/`, `/ads/delete/<id>/` | Управление объявлением |
+| `/ads/search/` | Поиск |
+| `/exchange/` | Мои предложения обмена |
+| `/exchange/sent_me/` | Предложения, отправленные мне |
+| `/exchange/create/` | Новое предложение |
+| `/exchange/accept/<id>/`, `/exchange/reject/<id>/` | Принять / отклонить |
+| `/exchange/update/<id>/`, `/exchange/delete/<id>/` | Изменить / удалить |
+| `/admin/` | Django Admin |
 
-/update/<id>/ — Редактирование объявления (только для владельца)
+<details>
+<summary>📦 Модели</summary>
 
-/delete/<id>/ — Удаление объявления (только для владельца)
+**Ad** — `user`, `title`, `description`, `image_url`, `category` (`cars` / `house` / `hobby` / `other`), `condition` (`new` / `used`), `created_at`.
 
-/search/ — Поиск объявлений по запросу
+**ExchangeProposal** — `ad_sender`, `ad_receiver`, `comment`, `status` (`pending` / `accepted` / `rejected`), `created_at`.
 
-/exchange_proposals/ — Список предложений обмена (требуется авторизация)
+</details>
 
-# Модели
-### Ad
-user: Владелец (ForeignKey на User)
+## 👤 Автор
 
-title: Заголовок (CharField)
-
-description: Описание (TextField)
-
-category: Категория (CharField, ключи из CATEGORY_CHOICES)
-
-condition: Состояние (CharField, ключи из CONDITION_CHOICES)
-
-image_url: URL изображения (URLField, опционально)
-
-created_at: Дата создания (DateTimeField)
-
-### ExchangeProposal
-ad_sender: Объявление отправителя (ForeignKey на Ad)
-
-ad_receiver: Объявление получателя (ForeignKey на Ad)
-
-comment: Комментарий (CharField)
-
-status: Статус (CharField, ключи из STATUS_CHOICES)
-
-created_at: Дата создания (DateTimeField)
-
-
+**Эдвард Осипчук** · GitHub: [@Edvvard0](https://github.com/Edvvard0) · Telegram: [@Edward0076](https://t.me/Edward0076)
